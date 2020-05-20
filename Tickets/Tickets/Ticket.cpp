@@ -19,11 +19,11 @@ Ticket::Ticket() : code("Default"), eventName(""), hall(Hall()), date(Date()),
 {
 }
 
-Ticket::Ticket(const Hall& hall, const Date& date, unsigned int row,
+Ticket::Ticket(const Hall& hall, const std::string& eventName, const Date& date, unsigned int row,
                unsigned int seat, unsigned int status) :
                row(row), seat(seat), status(0)
 {
-    //this->eventName = event.getName();
+    assert(row < hall.getRows() && seat < hall.getSeats());
     this->hall = hall;
     this->date = date;
     char codeX[21];
@@ -58,8 +58,10 @@ Ticket::Ticket(const Hall& hall, const Date& date, unsigned int row,
 
     codeX[20] = '|';
 
+    this->eventName = eventName;
+
     this->code = codeX;
-    //this->code += this->eventName;
+    this->code += this->eventName;
 }
 
 Ticket& Ticket::operator=(const Ticket& other)
@@ -148,8 +150,7 @@ void Ticket::print() const
               << this->eventName << std::endl
               << "data: ";
     this->date.print();
-    std::cout << std::endl
-              << "zala: "
+    std::cout << "zala: "
               << this->hall.getNumber() << std::endl
               << "red: "
               << this->row << std::endl

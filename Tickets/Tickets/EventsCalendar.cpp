@@ -1,5 +1,6 @@
 #include "EventsCalendar.h"
 #include <iterator>
+#include <cassert>
 
 void EventsCalendar::copy(const EventsCalendar& other)
 {
@@ -13,6 +14,7 @@ void EventsCalendar::erase()
 {
     this->events.clear();
 }
+
 EventsCalendar& EventsCalendar::removeEvent(const std::string name)
 {
     for(unsigned int i = 0 ; i < events.size() ; i++)
@@ -101,8 +103,18 @@ void EventsCalendar::book(const unsigned int row, const unsigned int seat,
     {
         if(this->events[i]->getName() == name && this->events[i]->getDate() == date)
         {
-            this->events[i]->setStatusAt(row, seat, 1);
-            this->events[i]->setStatusAt(row, seat, 1);
+            assert(row < this->events[i]->getHall().getRows());
+            assert(seat < this->events[i]->getHall().getSeats());
+            if (this->events[i]->getTicket(row, seat)->getStatus() == 1 ||
+                this->events[i]->getTicket(row, seat)->getStatus() == 2)
+            {
+                std::cout << "This ticket is already booked or sold!" << std::endl;
+            }
+            else
+            {
+                this->events[i]->setStatusAt(row, seat, 1);
+                this->events[i]->setStatusAt(row, seat, 1);
+            }
         }
     }
     std::cout << note << std::endl;
@@ -113,10 +125,17 @@ void EventsCalendar::unbook(const unsigned int row, const unsigned int seat,
 {
     for(unsigned int i = 0 ; i < this->events.size() ; i++)
     {
-        if(this->events[i]->getName() == name && this->events[i]->getDate() == date)
+        if(this->events[i]->getName() == name && this->events[i]->getDate() == date 
+            && this->events[i]->getTicket(row, seat)->getStatus() == 1)
         {
+            (row < this->events[i]->getHall().getRows());
+            assert(seat < this->events[i]->getHall().getSeats());
             this->events[i]->setStatusAt(row, seat, 0);
             this->events[i]->setStatusAt(row, seat, 0);
+        }
+        else
+        {
+            std::cout << "Biletut ne sushtestvuva ili ne e bil rezerviran!" << std::endl;
         }
     }
 }
@@ -128,8 +147,17 @@ void EventsCalendar::buy(const unsigned int row, const unsigned int seat,
     {
         if(this->events[i]->getName() == name && this->events[i]->getDate() == date)
         {
-            this->events[i]->setStatusAt(row, seat, 2);
-            this->events[i]->setStatusAt(row, seat, 2);
+            assert(row < this->events[i]->getHall().getRows());
+            assert(seat < this->events[i]->getHall().getSeats());
+            if (this->events[i]->getTicket(row, seat)->getStatus() == 2)
+            {
+                std::cout << "This ticket is already sold!" << std::endl;
+            }
+            else
+            {
+                this->events[i]->setStatusAt(row, seat, 2);
+                this->events[i]->setStatusAt(row, seat, 2);
+            }
         }
     }
 }
@@ -166,7 +194,7 @@ void EventsCalendar::bookings(const Date& date, const std::string name) const
     }
 }
 
-bool EventsCalendar::check(const std::string code)///TODO da opravq masiva s biletite v ciklite
+bool EventsCalendar::check(const std::string code)
 {
     if(code.size() < 21)
     {
@@ -226,11 +254,7 @@ bool EventsCalendar::check(const std::string code)///TODO da opravq masiva s bil
     unsigned int seat = hallNumRowSeat[2];
 
     std::string codeName;
-    codeName = code.substr(21);///TODO PROVERKA
-    /*for(unsigned int i = 0 ; i < codeName.size() ; i++)
-    {
-        codeName[i] = code[i + 21];
-    }*/
+    codeName = code.substr(21);
 
     for(unsigned int i = 0 ; i < this->events.size() ; i++)
     {
@@ -238,8 +262,8 @@ bool EventsCalendar::check(const std::string code)///TODO da opravq masiva s bil
             this->events[i]->getDate().getMonth() == month &&
             this->events[i]->getDate().getYear() == year &&
             this->events[i]->getHall().getNumber() == hallNumber &&
-            this->events[i]->getHall().getRows() > row &&
-            this->events[i]->getHall().getSeats() > seat &&
+            this->events[i]->getHall().getRows() >= row &&
+            this->events[i]->getHall().getSeats() >= seat &&
             this->events[i]->getTicket(row, seat)->getStatus() == 2 &&
             this->events[i]->getName() == codeName)
         {
@@ -250,9 +274,9 @@ bool EventsCalendar::check(const std::string code)///TODO da opravq masiva s bil
     std::cout << "Bilet s takuv kod ne sushtestvuva!";
     return false;
 }
-void EventsCalendar::report(const Date& from, const Date& to, const Hall& hall)
+void EventsCalendar::report(const Hall& hall, const Date& from, const Date& to)
 {
-    assert(from >= to);
+    assert(to >= from);
     if(hall.getNumber() == 0)
     {
         std::cout << "Informaciq za vsichki predstavleniq ot ";
@@ -294,7 +318,7 @@ void EventsCalendar::report(const Date& from, const Date& to, const Hall& hall)
 void EventsCalendar::printPopular() const
 {
     for(unsigned int i = 0 ; i < this->events.size() ; i++)
-    {///moje bi da mahna qvnite preobrazuvaniq
+    {
         if((double)((double)this->events[i]->getVisits()/
                     (double)this->events[i]->getHall().getCapacity()) > 0.8)
         {
@@ -303,19 +327,37 @@ void EventsCalendar::printPopular() const
     }
 }
 
-/*Event* EventsCalendar::printUnpopular(const Date& from, const Date& to)
+EventsCalendar& EventsCalendar::printUnpopular(const Date& from, const Date& to)
 {
-    assert(from >= to);
-    for(unsigned int i = 0 ; i < this->eventsNumber ; i++)
+    assert(to >= from);
+    for (unsigned int i = 0; i < this->events.size(); i++)
+    {
+        if (this->events[i]->getDate() >= from &&
+            to >= this->events[i]->getDate())
         {
-            if(this->events[i].getDate() >= from &&
-               to >= this->events[i].getDate())
+            if ((double)((double)this->events[i]->getVisits() /
+                (double)this->events[i]->getHall().getCapacity()) < 0.1)
             {
-                if((double)((double)this->events[i].getVisits()/
-                    (double)this->events[i].getHall().getCapacity()) < 0.1)
-                {
-                    this->events[i].print();
-                }
+                this->events[i]->print();
             }
         }
-}*/
+    }
+    std::cout << "Jelaete li da premahnete nqkoe subitie ot kalendara? (da/ne)" << std::endl;
+    char answer[3];
+    std::string ans;
+    do
+    {
+        std::cin.getline(answer, 3);
+        ans = answer;
+    } 
+    while (ans != "da" && ans != "ne");
+    if (ans == "da")
+    {
+        std::cout << "Posochete imeto na subitieto, koeto jelaete da iztriete:";
+        char name[51];
+        std::cin.getline(name, 51, '\n');
+        std::string ans2str = name;
+        this->removeEvent(name);
+    }
+    return *this;
+}

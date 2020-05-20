@@ -23,14 +23,14 @@ class EventsCalendar
 
         EventsCalendar& addEvent(const Date&, const Hall&, const std::string);
         unsigned int freeseats(const Date&, const std::string);
-        void book(const unsigned int, const unsigned int, const Date&, const std::string, const std::string);
+        void book(const unsigned int, const unsigned int, const Date&, const std::string, const std::string note = "");
         void unbook(const unsigned int, const unsigned int, const Date&, const std::string);
         void buy(const unsigned int, const unsigned int, const Date&, const std::string);
         void bookings(const Date& date = Date(0,0,0), const std::string name = nullptr) const;
         bool check(const std::string);
-        void report(const Date&, const Date&, const Hall& hall = Hall());
+        void report(const Hall& hall = Hall(), const Date& from = Date(0, 0, 0), const Date& to = Date(31, 12, 9999));
         void printPopular() const;
-        //Event* printUnpopular(const Date&, const Date&);
+        EventsCalendar& printUnpopular(const Date& from = Date(0, 0, 0), const Date& to = Date(31, 12, 9999));
 
 };
 

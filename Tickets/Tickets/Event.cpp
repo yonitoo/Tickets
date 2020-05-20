@@ -39,18 +39,12 @@ Event::Event(const std::string& name, const Date& date, const Hall& hall) :
                   date(date), hall(hall), visits(0)
 {
     this->name = name;
-    /*this->tickets = new Ticket*[this->hall.getRows()];
-    for(unsigned int i = 0 ; i < this->hall.getRows() ; i++)
-    {
-        this->tickets[i] = new Ticket[this->hall.getSeats()];
-    }*/
-
     for(unsigned int i = 0 ; i < this->hall.getRows() ; i++)
     {
         this->tickets.push_back(std::vector<Ticket*>());
         for(unsigned int j = 0 ; j < this->hall.getSeats() ; j++)
         {
-            this->tickets[i].push_back(new Ticket(this->hall, this->date, i, j, 0));
+            this->tickets[i].push_back(new Ticket(this->hall, this->name, this->date, i, j, 0));
         }
     }
 }
@@ -140,7 +134,7 @@ void Event::setDate(const Date& date)
 
 void Event::setStatusAt(unsigned int row, unsigned int seat, unsigned int status)
 {
-    assert(row > 0 && seat > 0 && row < this->hall.getRows() && seat < this->hall.getSeats());
+    assert(row < this->hall.getRows() && seat < this->hall.getSeats());
     this->tickets[row][seat]->setStatus(status);
 }
 
@@ -161,8 +155,7 @@ void Event::print() const
               << this->name << std::endl
               << "Data: ";
     this->date.print();
-    std::cout << std::endl
-              << "Zala nomer: "
+    std::cout << "Zala nomer: "
               << this->hall.getNumber() << std::endl
               << "Prodadeni bileti: "
               << this->getBoughtTickets()

@@ -18,7 +18,7 @@ class Ticket
 
     public:
         Ticket();
-        Ticket(const Hall&, const Date&, unsigned int, unsigned int, unsigned int);
+        Ticket(const Hall&, const std::string&, const Date&, unsigned int, unsigned int, unsigned int);
         Ticket& operator=(const Ticket&);
 
         std::string getCode() const;
