@@ -14,16 +14,16 @@ void Ticket::copy(const Ticket& other)
     this->status = other.status;
 }
 
-Ticket::Ticket() : code("Default"), eventName(""), hall(Hall()), date(Date()),
-                   row(0), seat(0), status(0)
+Ticket::Ticket() : code("Default"), eventName(""), hall(nullptr), date(Date()),
+                   row(0), seat(0), status(Status::INSTOCK)
 {
 }
 
-Ticket::Ticket(const Hall& hall, const std::string& eventName, const Date& date, unsigned int row,
-               unsigned int seat, unsigned int status) :
-               row(row), seat(seat), status(0)
+Ticket::Ticket(const Hall* hall, const std::string& eventName, const Date& date, unsigned int row,
+               unsigned int seat, const Status& status) :
+               row(row), seat(seat), status(Status::INSTOCK)
 {
-    assert(row < hall.getRows() && seat < hall.getSeats());
+    assert(row < hall->getRows() && seat < hall->getSeats());
     this->hall = hall;
     this->date = date;
     char codeX[21];
@@ -40,9 +40,9 @@ Ticket::Ticket(const Hall& hall, const std::string& eventName, const Date& date,
 
     codeX[8] = '|';
 
-    codeX[9] = '0' + this->hall.getNumber() / 100;
-    codeX[10] = '0' + (this->hall.getNumber() / 10) % 10;
-    codeX[11] = '0' + this->hall.getNumber() % 10;
+    codeX[9] = '0' + this->hall->getNumber() / 100;
+    codeX[10] = '0' + (this->hall->getNumber() / 10) % 10;
+    codeX[11] = '0' + this->hall->getNumber() % 10;
 
     codeX[12] = '|';
 
@@ -83,7 +83,7 @@ std::string Ticket::getEventName() const
     return this->eventName;
 }
 
-Hall Ticket::getHall() const
+const Hall* Ticket::getHall() const
 {
     return this->hall;
 }
@@ -93,17 +93,17 @@ Date Ticket::getDate() const
     return this->date;
 }
 
-unsigned int Ticket::getRow() const
+const unsigned int Ticket::getRow() const
 {
     return this->row;
 }
 
-unsigned int Ticket::getSeat() const
+const unsigned int Ticket::getSeat() const
 {
     return this->seat;
 }
 
-unsigned int Ticket::getStatus() const
+Status Ticket::getStatus() const
 {
     return this->status;
 }
@@ -118,7 +118,7 @@ void Ticket::setEventName(const std::string eventName)
     this->eventName = eventName;
 }
 
-void Ticket::setHall(const Hall& hall)
+void Ticket::setHall(const Hall* hall)
 {
     this->hall = hall;
 }
@@ -138,9 +138,8 @@ void Ticket::setSeat(unsigned int seat)
     this->seat = seat;
 }
 
-void Ticket::setStatus(unsigned int status)
+void Ticket::setStatus(const Status& status)
 {
-    assert(status < 3);
     this->status = status;
 }
 
@@ -151,7 +150,7 @@ void Ticket::print() const
               << "data: ";
     this->date.print();
     std::cout << "zala: "
-              << this->hall.getNumber() << std::endl
+              << this->hall->getNumber() << std::endl
               << "red: "
               << this->row << std::endl
               << "mqsto: "

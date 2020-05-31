@@ -12,7 +12,7 @@ class Event
         std::string name;
         Date date;
         std::vector<std::vector<Ticket*>> tickets;
-        Hall hall;
+        const Hall* hall;
         unsigned int visits;
 
         void copy(const Event&);
@@ -21,22 +21,22 @@ class Event
     public:
         Event();
         Event(const std::string&, const Date&,
-              const Hall&);
+              const Hall*);
         Event& operator=(const Event&);
         ~Event();
 
         std::string getName() const;
         Date getDate() const;
-        unsigned int getBoughtTickets() const;
-        unsigned int getReservedAndBoughtTickets() const;
-        Ticket* getTicket(unsigned int, unsigned int);
-        Hall getHall() const;
+        unsigned int getSoldTickets() const;
+        unsigned int getReservedAndSoldTickets() const;
+        Ticket* getTicket(unsigned int, unsigned int) const;
+        const Hall* getHall() const;
         unsigned int getVisits() const;
 
         void setName(const std::string);
         void setDate(const Date&);
-        void setStatusAt(unsigned int, unsigned int, unsigned int);
-        void setHall(const Hall&);
+        void setStatusAt(unsigned int, unsigned int, const Status&);
+        void setHall(const Hall*);
         void setVisits(const unsigned int);
 
         void print() const;

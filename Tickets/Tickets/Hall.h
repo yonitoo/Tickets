@@ -1,6 +1,7 @@
 #ifndef HALL_H
 #define HALL_H
 
+#include <iostream>
 #include <vector>
 
 class Hall

@@ -138,17 +138,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Date.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventsCalendar.h" />
     <ClInclude Include="Hall.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="Status.h" />
     <ClInclude Include="Ticket.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventsCalendar.cpp" />
+    <ClCompile Include="File.cpp" />
     <ClCompile Include="Hall.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Ticket.cpp" />
   </ItemGroup>
